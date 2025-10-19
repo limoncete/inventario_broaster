@@ -1,0 +1,28 @@
+# 1. Eliminar restos anteriores, limpiamos todo Docker roto
+sudo apt-get remove --purge -y docker docker-engine docker.io docker-ce docker-ce-cli containerd runc docker-compose docker-compose-plugin docker-cli-plugin docker-buildx docker-buildx-plugin || true
+sudo apt-get autoremove -y
+sudo apt-get update
+
+# 2. Instalamos dependencias necesarias
+sudo apt-get install -y ca-certificates curl gnupg lsb-release apt-transport-https
+
+# 3. Añadimos la clave GPG oficial de Docker
+sudo mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmour -o /etc/apt/keyrings/docker.gpg
+
+# 4. Añadimos el repositorio oficial de Docker a APT
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/debian \
+  $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+# 5. Actualizamos e instalamos Docker Engine + Docker Compose Plugin
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-compose-plugin
+
+# 6. Arrancamos y habilitamos el servicio Docker
+sudo systemctl enable --now docker
+
+# 7. Comprobamos que Docker está funcionando
+docker --version
+docker compose version
+sudo systemctl status docker --no-pager
