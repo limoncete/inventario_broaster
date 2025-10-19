@@ -1,0 +1,33 @@
+version: '3.8'
+
+networks:
+  lab_net:
+    driver: bridge
+    internal: true   # internal evita que la red acceda a Internet
+
+services:
+  kali:
+    image: kalilinux/kali-rolling
+    container_name: kali_attacker
+    tty: true
+    stdin_open: true
+    networks:
+      - lab_net
+    volumes:
+      - ./kali-home:/root
+
+  metasploitable:
+    image: tleemcjr/metasploitable2
+    container_name: metasploitable_victim
+    networks:
+      - lab_net
+
+  metasploit:
+    image: metasploitframework/metasploit-framework
+    container_name: metasploit_console
+    tty: true
+    stdin_open: true
+    networks:
+      - lab_net
+    depends_on:
+      - metasploitable
